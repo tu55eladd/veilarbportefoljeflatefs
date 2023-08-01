@@ -206,13 +206,17 @@ function EnhetListehode({
                     title="Startdato for pågående oppfølgingsperiode"
                     headerId="oppfolging-startet"
                 />
-                <Header
-                    className="col col-xs-2"
+                <SorteringHeader
+                    sortering={Sorteringsfelt.VEILEDER}
+                    onClick={sorteringOnClick}
+                    rekkefolge={sorteringsrekkefolge}
+                    erValgt={sorteringsfelt === Sorteringsfelt.VEILEDER}
+                    tekst="Veileder"
                     skalVises={valgteKolonner.includes(Kolonne.VEILEDER)}
+                    className="col col-xs-2"
+                    title="Navn på tildelt veileder"
                     headerId="veileder"
-                >
-                    Veileder
-                </Header>
+                />
                 <SorteringHeader
                     sortering={Sorteringsfelt.NAVIDENT}
                     onClick={sorteringOnClick}
