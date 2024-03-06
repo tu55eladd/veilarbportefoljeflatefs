@@ -56,4 +56,4 @@ ignore-fil med riktig navn i det gitte git prosjektet du står i. Se forøvrig g
 
 ## For NAV-ansatte
 
-Interne henvendelser kan sendes via Slack i kanalen #team-obo-poao.
+Interne henvendelser kan sendes via Slack i kanalen #team-obo-poao. 

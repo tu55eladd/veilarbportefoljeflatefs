@@ -1,4 +1,4 @@
-import {lagreHuskelappAction} from '../../ducks/huskelapp';
+import {HUSKELAPP_LAGRE_OK, lagreHuskelappAction} from '../../ducks/huskelapp';
 import {hentHuskelappForBruker} from '../../ducks/portefolje';
 import {leggTilStatustall} from '../../ducks/statustall-veileder';
 import {ThunkDispatch} from 'redux-thunk';
@@ -17,19 +17,22 @@ export const lagreHuskelapp = async (
     onModalClose: () => void,
     arbeidsliste: ArbeidslisteDataModell[]
 ) => {
-    await dispatch(
-        lagreHuskelappAction({
-            brukerFnr: bruker.fnr,
-            enhetId: enhetId!!,
-            frist: values.frist?.toString(),
-            kommentar: values.kommentar
-        })
-    );
-    await dispatch(hentHuskelappForBruker(bruker.fnr, enhetId!!));
-    await dispatch(leggTilStatustall('mineHuskelapper', 1));
-    if (!!arbeidsliste.length) {
-        const res = await dispatch(slettArbeidslisteAction(arbeidsliste));
-        await oppdaterStateVedSlettArbeidsliste(res, arbeidsliste, dispatch);
+    const {type: responseAction} = await lagreHuskelappAction({
+        brukerFnr: bruker.fnr,
+        enhetId: enhetId!!,
+        frist: values.frist?.toString(),
+        kommentar: values.kommentar
+    })(dispatch);
+
+    if (responseAction === HUSKELAPP_LAGRE_OK) {
+        hentHuskelappForBruker(bruker.fnr, enhetId!!)(dispatch);
+        await dispatch(leggTilStatustall('mineHuskelapper', 1));
+        if (!!arbeidsliste.length) {
+            const res = await dispatch(slettArbeidslisteAction(arbeidsliste));
+            await oppdaterStateVedSlettArbeidsliste(res, arbeidsliste, dispatch);
+            res && onModalClose();
+        } else {
+            onModalClose();
+        }
     }
-    await onModalClose();
 };

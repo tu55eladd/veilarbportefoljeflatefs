@@ -258,11 +258,11 @@ export interface ArbeidslisteModell {
 }
 
 export interface HuskelappModell {
-    huskelappId?: string | null;
+    huskelappId: string;
     frist?: Date | null;
     kommentar?: string | null;
-    endretDato?: Date | null;
-    endretAv?: string | null;
+    endretDato: Date;
+    endretAv: string;
 }
 
 export enum Status {

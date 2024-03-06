@@ -189,6 +189,7 @@ export const veilarbportefoljeHandlers: RequestHandler[] = [
                 error: [],
                 data: slettArbeidslisterRequest.map(arbeidsliste => arbeidsliste.fnr)
             });
+            //return HttpResponse.error();
         })
     ),
     http.get(
@@ -232,6 +233,8 @@ export const veilarbportefoljeHandlers: RequestHandler[] = [
             (await request.json()) as LagreHuskelapp;
 
             return HttpResponse.json('458b42ca-0f31-4041-a549-3a250a9ec291');
+            //new HttpResponse(null, {status: 500, statusText: "Noe gikk galt"});
+            //return HttpResponse.error()
         })
     ),
     http.put(

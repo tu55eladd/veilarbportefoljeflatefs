@@ -1,4 +1,4 @@
-import {endreHuskelappAction} from '../../ducks/huskelapp';
+import {endreHuskelappAction, HUSKELAPP_ENDRE_OK} from '../../ducks/huskelapp';
 import {hentHuskelappForBruker} from '../../ducks/portefolje';
 import {ThunkDispatch} from 'redux-thunk';
 import {AppState} from '../../reducer';
@@ -14,15 +14,15 @@ export const endreHuskelapp = async (
     onModalClose: () => void,
     huskelappId: string
 ) => {
-    await dispatch(
-        endreHuskelappAction({
-            huskelappId: huskelappId,
-            brukerFnr: bruker.fnr,
-            enhetId: enhetId,
-            frist: values.frist?.toString(),
-            kommentar: values.kommentar
-        })
-    );
-    await dispatch(hentHuskelappForBruker(bruker.fnr, enhetId));
-    await onModalClose();
+    const {type: responseAction} = await endreHuskelappAction({
+        huskelappId: huskelappId,
+        brukerFnr: bruker.fnr,
+        enhetId: enhetId,
+        frist: values.frist?.toString(),
+        kommentar: values.kommentar
+    })(dispatch);
+    if (responseAction === HUSKELAPP_ENDRE_OK) {
+        hentHuskelappForBruker(bruker.fnr, enhetId)(dispatch);
+        onModalClose();
+    }
 };

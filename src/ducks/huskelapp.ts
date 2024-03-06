@@ -2,17 +2,16 @@ import {doThenDispatch, STATUS} from './utils';
 import {endreHuskelapp, lagreHuskelapp, slettHuskelapp} from '../middleware/api';
 
 // Actions
-const HUSKELAPP_LAGRE_OK = 'veilarbportefolje/lagre_huskelapp/OK';
-const HUSKELAPP_LAGRE_FEILET = 'veilarbportefolje/lagre_huskelapp/FEILET';
-const HUSKELAPP_LAGRE_PENDING = 'veilarbportefolje/lagre_huskelapp/PENDING';
-
-const HUSKELAPP_SLETT_OK = 'veilarbportefolje/slett_huskelapp/OK';
-const HUSKELAPP_SLETT_FEILET = 'veilarbportefolje/slett_huskelapp/FEILET';
-const HUSKELAPP_SLETT_PENDING = 'veilarbportefolje/slett_huskelapp/PENDING';
-
-const HUSKELAPP_ENDRE_OK = 'veilarbportefolje/endre_huskelapp/OK';
-const HUSKELAPP_ENDRE_FEILET = 'veilarbportefolje/endre_huskelapp/FEILET';
-const HUSKELAPP_ENDRE_PENDING = 'veilarbportefolje/endre_huskelapp/PENDING';
+export const HUSKELAPP_LAGRE_OK = 'veilarbportefolje/lagre_huskelapp/OK';
+export const HUSKELAPP_LAGRE_FEILET = 'veilarbportefolje/lagre_huskelapp/FEILET';
+export const HUSKELAPP_LAGRE_PENDING = 'veilarbportefolje/lagre_huskelapp/PENDING';
+export const HUSKELAPP_SLETT_OK = 'veilarbportefolje/slett_huskelapp/OK';
+export const HUSKELAPP_SLETT_FEILET = 'veilarbportefolje/slett_huskelapp/FEILET';
+export const HUSKELAPP_SLETT_PENDING = 'veilarbportefolje/slett_huskelapp/PENDING';
+export const HUSKELAPP_ENDRE_OK = 'veilarbportefolje/endre_huskelapp/OK';
+export const HUSKELAPP_ENDRE_FEILET = 'veilarbportefolje/endre_huskelapp/FEILET';
+export const HUSKELAPP_ENDRE_PENDING = 'veilarbportefolje/endre_huskelapp/PENDING';
+export const HUSKELAPP_RESET = 'veilarbportefolje/huskelapp/RESET';
 
 export interface LagreHuskelapp {
     enhetId: string;
@@ -42,6 +41,7 @@ export default function huskelappReducer(state = initialState, action) {
         case HUSKELAPP_SLETT_OK:
         case HUSKELAPP_ENDRE_OK:
         case HUSKELAPP_LAGRE_OK:
+        case HUSKELAPP_RESET:
             return {...state, status: STATUS.OK, data: action.data};
         default:
             return state;
@@ -49,26 +49,30 @@ export default function huskelappReducer(state = initialState, action) {
 }
 
 //action creators
-export function lagreHuskelappAction(huskelapp: LagreHuskelapp) {
+export const lagreHuskelappAction = (huskelapp: LagreHuskelapp) => {
     return doThenDispatch(() => lagreHuskelapp(huskelapp), {
         OK: HUSKELAPP_LAGRE_OK,
         FEILET: HUSKELAPP_LAGRE_FEILET,
         PENDING: HUSKELAPP_LAGRE_PENDING
     });
-}
+};
 
-export function endreHuskelappAction(huskelapp: EndreHuskelapp) {
+export const endreHuskelappAction = (huskelapp: EndreHuskelapp) => {
     return doThenDispatch(() => endreHuskelapp(huskelapp), {
         OK: HUSKELAPP_ENDRE_OK,
         FEILET: HUSKELAPP_ENDRE_FEILET,
         PENDING: HUSKELAPP_ENDRE_PENDING
     });
-}
+};
 
-export function slettHuskelappAction(huskelappId: string) {
+export const slettHuskelappAction = (huskelappId: string) => {
     return doThenDispatch(() => slettHuskelapp(huskelappId), {
         OK: HUSKELAPP_SLETT_OK,
         FEILET: HUSKELAPP_SLETT_FEILET,
         PENDING: HUSKELAPP_SLETT_PENDING
     });
-}
+};
+
+export const resetHuskelappStatusAction = () => {
+    return {type: HUSKELAPP_RESET};
+};

@@ -1,4 +1,4 @@
-import {slettHuskelappAction} from '../../ducks/huskelapp';
+import {HUSKELAPP_SLETT_OK, slettHuskelappAction} from '../../ducks/huskelapp';
 import {leggTilStatustall} from '../../ducks/statustall-veileder';
 import {hentHuskelappForBruker} from '../../ducks/portefolje';
 import {ThunkDispatch} from 'redux-thunk';
@@ -12,7 +12,9 @@ export const handleSlettHuskelapp = async (
     fnr: string,
     enhetId: string
 ) => {
-    await dispatch(slettHuskelappAction(huskelapp.huskelappId!!));
-    await dispatch(leggTilStatustall('mineHuskelapper', -1));
-    await dispatch(hentHuskelappForBruker(fnr, enhetId));
+    const {type: responseAtion} = await dispatch(slettHuskelappAction(huskelapp.huskelappId!!));
+    if (responseAtion === HUSKELAPP_SLETT_OK) {
+        await dispatch(leggTilStatustall('mineHuskelapper', -1));
+        hentHuskelappForBruker(fnr, enhetId)(dispatch);
+    }
 };

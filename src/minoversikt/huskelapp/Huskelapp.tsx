@@ -18,7 +18,7 @@ export const Huskelapp = ({huskelapp, className, children: actionButtons}: Props
         <BodyShort size="small">{huskelapp?.kommentar}</BodyShort>
         <BodyShort size="small">
             <i>
-                Endret {toDatePrettyPrint(huskelapp?.endretDato)} av {huskelapp?.endretAv}
+                Endret {toDatePrettyPrint(huskelapp.endretDato)} av {huskelapp.endretAv}
             </i>
         </BodyShort>
         {actionButtons}

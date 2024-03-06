@@ -1,15 +1,21 @@
 import React from 'react';
 import classNames from 'classnames';
-import {Button, Modal} from '@navikt/ds-react';
+import {Alert, Button, Modal} from '@navikt/ds-react';
 import {HuskelappModalHeader} from './HuskelappModalHeader';
-import {ArbeidslisteDataModell, ArbeidslisteModell, BrukerModell, HuskelappModell} from '../../model-interfaces';
+import {
+    ArbeidslisteDataModell,
+    ArbeidslisteModell,
+    BrukerModell,
+    HuskelappModell,
+    Status
+} from '../../model-interfaces';
 import './huskelapp.css';
 import {usePortefoljeSelector} from '../../hooks/redux/use-portefolje-selector';
 import {OversiktType} from '../../ducks/ui/listevisning';
 import {ThunkDispatch} from 'redux-thunk';
 import {AppState} from '../../reducer';
 import {AnyAction} from 'redux';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {HuskelappInfoAlert} from './HuskelappInfoAlert';
 import {Form, Formik} from 'formik';
 import {visServerfeilModal} from '../../ducks/modal-serverfeil';
@@ -18,6 +24,7 @@ import FormikDatoVelger from '../../components/formik/formik-datovelger/formik-d
 import {lagreHuskelapp} from './lagreHuskelapp';
 import {endreHuskelapp} from './endreHuskelapp';
 import {EksisterendeArbeidslisteVisning} from './EksisterendeArbeidslisteVisning';
+import {resetHuskelappStatusAction} from '../../ducks/huskelapp';
 
 interface Props {
     onModalClose: () => void;
@@ -29,12 +36,17 @@ interface Props {
 
 export const LagEllerEndreHuskelappModal = ({isModalOpen, onModalClose, huskelapp, bruker, arbeidsliste}: Props) => {
     const {enhetId} = usePortefoljeSelector(OversiktType.minOversikt);
+    const huskelappStatus = useSelector((state: AppState) => state.huskelapp.status);
+    const arbeidslisteStatus = useSelector((state: AppState) => state.arbeidsliste.status);
     const dispatch: ThunkDispatch<AppState, any, AnyAction> = useDispatch();
     return (
         <Modal
             className={classNames('LagEllerEndreHuskelappModal', {medEksisterendeArbeidsliste: !!arbeidsliste})}
             open={isModalOpen}
-            onClose={onModalClose}
+            onClose={() => {
+                dispatch(resetHuskelappStatusAction());
+                onModalClose();
+            }}
         >
             <Modal.Content>
                 <HuskelappModalHeader />
@@ -96,13 +108,35 @@ export const LagEllerEndreHuskelappModal = ({isModalOpen, onModalClose, huskelap
                     </div>
                     {arbeidsliste && <EksisterendeArbeidslisteVisning arbeidsliste={arbeidsliste} />}
                 </div>
-                <div className="huskelapp-handlingsknapper">
-                    <Button size="small" variant="secondary" type="button" onClick={onModalClose}>
-                        Avbryt
-                    </Button>
-                    <Button variant="primary" size="small" type="submit" form="lagEllerEndreHuskelappForm">
-                        {arbeidsliste ? 'Lagre og slett eksisterende' : 'Lagre'}
-                    </Button>
+                <div>
+                    {huskelappStatus === Status.ERROR && (
+                        <Alert variant="error">Kunne ikke lagre huskelapp for bruker</Alert>
+                    )}
+                    {arbeidslisteStatus === Status.ERROR && (
+                        <Alert variant="error">Har lagret ny huskelapp, men kunne ikke slette arbeidsliste</Alert>
+                    )}
+                    <div className="huskelapp-handlingsknapper">
+                        <Button
+                            size="small"
+                            variant="secondary"
+                            type="button"
+                            onClick={() => {
+                                dispatch(resetHuskelappStatusAction());
+                                onModalClose();
+                            }}
+                        >
+                            Avbryt
+                        </Button>
+                        <Button
+                            variant="primary"
+                            size="small"
+                            type="submit"
+                            loading={huskelappStatus === Status.PENDING}
+                            form="lagEllerEndreHuskelappForm"
+                        >
+                            {arbeidsliste ? 'Lagre og slett eksisterende' : 'Lagre'}
+                        </Button>
+                    </div>
                 </div>
             </Modal.Content>
         </Modal>
