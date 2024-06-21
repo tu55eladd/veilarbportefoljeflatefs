@@ -41,6 +41,7 @@ function FormikTekstArea({name, index, label = '', testId, maxLengde, className}
                         maxLength={maxLengde}
                         data-testid={`${testId}${indexId}`}
                         className={className}
+                        autoComplete="on"
                     />
                 );
             }}
