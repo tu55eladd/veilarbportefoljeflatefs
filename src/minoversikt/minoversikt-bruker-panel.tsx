@@ -1,10 +1,9 @@
-import React, {MouseEvent, useEffect, useLayoutEffect, useState} from 'react';
+import {MouseEvent, useEffect, useLayoutEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {AnyAction} from 'redux';
 import {ThunkDispatch} from 'redux-thunk';
 import {Collapse} from 'react-collapse';
 import classNames from 'classnames';
-import {Checkbox, Tag} from '@navikt/ds-react';
 import ArbeidslisteButton from '../components/tabell/arbeidslistebutton';
 import Etiketter from '../components/tabell/etiketter';
 import {BrukerModell, FiltervalgModell, VeilederModell} from '../model-interfaces';
@@ -21,6 +20,9 @@ import ArbeidslistekategoriVisning from '../components/tabell/arbeidslisteikon';
 import FargekategoriTabellradKnapp from '../components/fargekategori/fargekategori-tabellrad-knapp';
 import {HuskelappIkonInngang} from './huskelapp/HuskelappIkonInngang';
 import {HuskelappPanelvisning} from './huskelapp/panelvisning/HuskelappPanelvisning';
+import {TomtHuskelappEllerFargekategoriFelt} from './TomtHuskelappEllerFargekategoriFelt';
+import {nullstillBrukerfeil} from '../ducks/brukerfeilmelding';
+import {Checkbox, Tag} from '@navikt/ds-react';
 import './minoversikt.css';
 
 interface MinOversiktBrukerPanelProps {
@@ -52,8 +54,8 @@ function MinoversiktBrukerPanel({
     const erHuskelappFeatureTogglePa = useFeatureSelector()(HUSKELAPP);
 
     const scrollToLastPos = () => {
-        const xPos = parseInt(localStorage.getItem('xPos') || '0');
-        const yPos = parseInt(localStorage.getItem('yPos') || '0');
+        const xPos = parseInt(localStorage.getItem('xScrollPos') ?? '0');
+        const yPos = parseInt(localStorage.getItem('yScrollPos') ?? '0');
         window.scrollTo(xPos, yPos);
     };
 
@@ -103,6 +105,7 @@ function MinoversiktBrukerPanel({
                     hideLabel
                     onChange={() => {
                         settMarkert(bruker.fnr, !bruker.markert);
+                        dispatch(nullstillBrukerfeil());
                     }}
                     size="small"
                 >
@@ -118,8 +121,16 @@ function MinoversiktBrukerPanel({
                 )}
                 {erHuskelappFeatureTogglePa && (
                     <div className="brukerliste__minoversikt-ikonknapper">
-                        <FargekategoriTabellradKnapp bruker={bruker} />
-                        <HuskelappIkonInngang bruker={bruker} />
+                        {bruker.fnr ? (
+                            <FargekategoriTabellradKnapp bruker={bruker} />
+                        ) : (
+                            <TomtHuskelappEllerFargekategoriFelt />
+                        )}
+                        {bruker.fnr ? (
+                            <HuskelappIkonInngang bruker={bruker} />
+                        ) : (
+                            <TomtHuskelappEllerFargekategoriFelt />
+                        )}
                     </div>
                 )}
                 <MinOversiktKolonner
@@ -161,7 +172,7 @@ function MinoversiktBrukerPanel({
                     <ArbeidslistePanel
                         skalVises={arbeidslisteAktiv}
                         bruker={bruker}
-                        innloggetVeileder={innloggetVeileder && innloggetVeileder.ident}
+                        innloggetVeilederIdent={innloggetVeileder?.ident}
                         settMarkert={() => {
                             settMarkert(bruker.fnr, !bruker.markert);
                         }}

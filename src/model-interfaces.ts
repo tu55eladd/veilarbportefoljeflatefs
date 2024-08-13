@@ -56,7 +56,7 @@ export enum Sorteringsfelt {
     ENSLIGE_FORSORGERE_OM_BARNET = 'enslige_forsorgere_om_barnet',
 
     BARN_UNDER_18_AAR = 'barn_under_18_aar',
-    BRUKERS_SITUASJON_SIST_ENDRET = 'brukersSituasjonSistEndret',
+    UTDANNING_OG_SITUASJON_SIST_ENDRET = 'utdanningOgSituasjonSistEndret',
     HUSKELAPP_KOMMENTAR = 'huskelapp_kommentar',
     HUSKELAPP_FRIST = 'huskelapp_frist',
     HUSKELAPP = 'huskelapp'
@@ -206,14 +206,16 @@ export interface BrukerModell {
     barnUnder18AarData: BarnUnder18Aar[];
     brukersSituasjonSistEndret: string;
     fargekategori: FargekategoriModell | null;
+    fargekategoriEnhetId: string | null;
     huskelapp?: HuskelappModell;
+    utdanningOgSituasjonSistEndret: string;
 }
 
 export interface EnsligeForsorgereOvergangsstonad {
     vedtaksPeriodetype: string;
-    harAktivitetsplikt?: boolean | undefined;
+    harAktivitetsplikt?: boolean;
     utlopsDato: Date;
-    yngsteBarnsFødselsdato: Date;
+    yngsteBarnsFodselsdato: Date;
 }
 
 export interface BarnUnder18Aar {
@@ -244,9 +246,19 @@ export enum FargekategoriModell {
     FARGEKATEGORI_B = 'FARGEKATEGORI_B',
     FARGEKATEGORI_C = 'FARGEKATEGORI_C',
     FARGEKATEGORI_D = 'FARGEKATEGORI_D',
-    FARGEKATEGORI_E = 'FARGEKATEGORI_E',
     FARGEKATEGORI_F = 'FARGEKATEGORI_F',
+    FARGEKATEGORI_E = 'FARGEKATEGORI_E',
     INGEN_KATEGORI = 'INGEN_KATEGORI'
+}
+
+export enum Fargekategorinavn {
+    FARGEKATEGORI_A = 'Blå halvsirkel',
+    FARGEKATEGORI_B = 'Grønn trekant',
+    FARGEKATEGORI_C = 'Gul sirkel',
+    FARGEKATEGORI_D = 'Lilla firkant',
+    FARGEKATEGORI_E = 'Turkis femkant',
+    FARGEKATEGORI_F = 'Oransje rombe',
+    INGEN_KATEGORI = 'Ingen kategori'
 }
 
 export enum KategoriModell {
@@ -270,11 +282,12 @@ export interface ArbeidslisteModell {
 }
 
 export interface HuskelappModell {
-    huskelappId?: string | null;
+    huskelappId: string | null;
     frist?: Date | null;
     kommentar?: string | null;
-    endretDato?: Date | null;
-    endretAv?: string | null;
+    endretDato: Date | null;
+    endretAv: string | null;
+    enhetId: string | null;
 }
 
 export enum Status {

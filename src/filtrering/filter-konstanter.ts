@@ -1,5 +1,5 @@
 import {lag2Sifret, range} from '../utils/utils';
-import {FargekategoriModell, KategoriModell, Sorteringsfelt} from '../model-interfaces';
+import {FargekategoriModell, Fargekategorinavn, KategoriModell, Sorteringsfelt} from '../model-interfaces';
 import {Dictionary} from '../utils/types/types';
 
 const skjemaelementInnrykkKlasse = 'skjemaelement--innrykk';
@@ -127,14 +127,7 @@ export const ferdigfilterListeLabelTekst = {
     INAKTIVE_BRUKERE: 'Ikke servicebehov',
     MIN_ARBEIDSLISTE: 'Min arbeidsliste',
     MINE_HUSKELAPPER: 'Huskelapper',
-    MINE_FARGEKATEGORIER: 'Kategorier',
-    FARGEKATEGORI_A: 'Blå',
-    FARGEKATEGORI_B: 'Grønn',
-    FARGEKATEGORI_C: 'Gul',
-    FARGEKATEGORI_D: 'Lilla',
-    FARGEKATEGORI_E: 'Oransje',
-    FARGEKATEGORI_F: 'Lyseblå',
-    INGEN_KATEGORI: 'Ingen kategori'
+    MINE_FARGEKATEGORIER: 'Kategorier'
 };
 
 export const arbeidslisteKategori = {
@@ -151,15 +144,7 @@ export const arbeidslisteKategoriGammel = {
     GUL: 'Gul (med arbeidsliste)'
 };
 
-export const fargekategorier = {
-    FARGEKATEGORI_A: 'Blå',
-    FARGEKATEGORI_B: 'Grønn',
-    FARGEKATEGORI_C: 'Gul',
-    FARGEKATEGORI_D: 'Lilla',
-    FARGEKATEGORI_E: 'Lyseblå',
-    FARGEKATEGORI_F: 'Oransje',
-    INGEN_KATEGORI: 'Ingen kategori'
-};
+export const fargekategorier = Fargekategorinavn;
 
 export const alder = {
     '0-19': '≤ 19 år',
@@ -321,28 +306,19 @@ export const stillingFraNavFilter = {
 export const registreringstype = {
     ER_PERMITTERT: {label: 'Er permittert eller kommer til å bli permittert'},
     USIKKER_JOBBSITUASJON: {label: 'Er usikker på jobbsituasjonen min'},
-    MISTET_JOBBEN: {label: 'Har mistet eller kommer til å miste jobben'},
-    VIL_FORTSETTE_I_JOBB: {label: 'Har jobb og ønsker å fortsette i den jobben jeg har'},
+    HAR_BLITT_SAGT_OPP: {label: 'Jeg har blitt sagt opp av arbeidsgiver'},
     DELTIDSJOBB_VIL_MER: {label: 'Har deltidsjobb, men vil jobbe mer'},
     VIL_BYTTE_JOBB: {label: 'Har jobb, men vil bytte'},
     AKKURAT_FULLFORT_UTDANNING: {label: 'Har akkurat fullført utdanning, militærtjeneste eller annet'},
     HAR_SAGT_OPP: {label: 'Har sagt opp eller kommer til å si opp'},
     ALDRI_HATT_JOBB: {label: 'Har aldri vært i jobb'},
-    JOBB_OVER_2_AAR: {label: 'Har ikke vært i jobb de 2 siste årene'},
+    IKKE_VAERT_I_JOBB_SISTE_2_AAR: {label: 'Har ikke vært i jobb de siste 2 årene'},
+    KONKURS: {label: 'Arbeidsgiveren min er konkurs'},
+    MIDLERTIDIG_JOBB: {label: 'Jeg har fått midlertidig jobb hos en annen arbeidsgiver'},
+    NY_JOBB: {label: 'Jeg skal begynne å jobbe hos en annen arbeidsgiver'},
+    ANNET: {label: 'Ingen av situasjonene passer for meg'},
     INGEN_DATA: {label: 'Ingen registreringsinformasjon'}
 };
-
-export const endringISituasjon = {
-    OPPSIGELSE: {label: 'Jeg har blitt sagt opp av arbeidsgiver'},
-    ENDRET_PERMITTERINGSPROSENT: {label: 'Arbeidsgiver har endret permitteringen min'},
-    TILBAKE_TIL_JOBB: {label: 'Jeg skal tilbake i jobb hos min nåværende arbeidsgiver'},
-    NY_JOBB: {label: 'Jeg skal begynne å jobbe hos en annen arbeidsgiver'},
-    MIDLERTIDIG_JOBB: {label: 'Jeg har fått midlertidig jobb hos en annen arbeidsgiver'},
-    KONKURS: {label: 'Arbeidsgiveren min er konkurs'},
-    SAGT_OPP: {label: 'Jeg har sagt opp jobben min'},
-    ANNET: {label: 'Situasjonen min har endret seg, men ingen av valgene passet'}
-};
-
 export const landgruppe = {
     LANDGRUPPE_0: 'Landgruppe 0',
     LANDGRUPPE_1: 'Landgruppe 1',
@@ -476,7 +452,6 @@ const filterKonstanter = {
     ytelseAapSortering,
     manuellBrukerStatus,
     registreringstype,
-    endringISituasjon,
     arbeidslisteKategori,
     arbeidslisteKategoriGammel,
     cvJobbprofil,

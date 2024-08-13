@@ -1,20 +1,30 @@
-import * as React from 'react';
-import {useState} from 'react';
+import React, {useState} from 'react';
 import {connect, useDispatch, useSelector} from 'react-redux';
+import {BodyShort, Button, Heading, Modal} from '@navikt/ds-react';
 import {tildelVeileder} from '../../../ducks/portefolje';
-import {VeilederModell} from '../../../model-interfaces';
+import {BrukerModell} from '../../../model-interfaces';
 import {AppState} from '../../../reducer';
-import '../../toolbar/toolbar.css';
 import SokFilter from '../../sok-veiledere/sok-filter';
-import classNames from 'classnames';
 import {nameToStateSliceMap} from '../../../ducks/utils';
 import {useSelectGjeldendeVeileder} from '../../../hooks/portefolje/use-select-gjeldende-veileder';
-import {BodyShort, Button, Heading, Modal, Radio, RadioGroup} from '@navikt/ds-react';
 import {useIdentSelector} from '../../../hooks/redux/use-innlogget-ident';
 import {Fnr, FnrList} from '../../fnr-list';
 import {useEnhetSelector} from '../../../hooks/redux/use-enhet-selector';
 import {trackAmplitude} from '../../../amplitude/amplitude';
 import {OversiktType} from '../../../ducks/ui/listevisning';
+import {TildelVeilederRenderer} from './tildel-veileder-renderer';
+import '../../toolbar/toolbar.css';
+
+const fjernduplikatOgMapTilFnrArray = (brukereSomTildeles: BrukerModell[]) =>
+    brukereSomTildeles.reduce((arrayUtenDuplikater: Fnr[], bruker: BrukerModell) => {
+        if (arrayUtenDuplikater.some(brukerForDuplikatsjekk => brukerForDuplikatsjekk.brukerFnr === bruker.fnr)) {
+            return arrayUtenDuplikater;
+        }
+        arrayUtenDuplikater.push({
+            brukerFnr: bruker.fnr
+        });
+        return arrayUtenDuplikater;
+    }, []);
 
 interface TildelVeilederProps {
     oversiktType?: OversiktType;
@@ -29,9 +39,10 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
     const [tilordningerAlle, setTilordningerAlle] = useState<
         {fraVeilederId: string | undefined; tilVeilederId: string; brukerFnr: string}[]
     >([]);
-    const [tilordningerBrukereArbeidslisteBlirIkkeSlettet, setTilordningerBrukereArbeidslisteBlirIkkeSlettet] =
-        useState<{fraVeilederId: string | undefined; tilVeilederId: string; brukerFnr: string}[]>([]);
-    const [fnrArbeidslisteBlirSlettet, setFnrArbeidslisteBlirSlettet] = useState<Fnr[]>([]);
+    const [tilordningerBrukereBlirIkkeSlettet, setTilordningerBrukereBlirIkkeSlettet] = useState<
+        {fraVeilederId: string | undefined; tilVeilederId: string; brukerFnr: string}[]
+    >([]);
+    const [fnrIAdvarselslista, setFnrIAdvarselslista] = useState<Fnr[]>([]);
     const dispatch = useDispatch();
     const gjeldendeVeileder = useSelectGjeldendeVeileder();
     const innloggetVeileder = useIdentSelector()?.ident;
@@ -63,11 +74,14 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
                 brukerFnr: bruker.fnr
             }));
 
-            const brukereArbeidslisteBlirIkkeSlettet = valgteBrukere.filter(
-                bruker => !bruker.nyForEnhet || !bruker.arbeidsliste.arbeidslisteAktiv || bruker.veilederId === ident
+            const brukereVilIkkeBliSlettet = valgteBrukere.filter(
+                bruker =>
+                    (!bruker.arbeidsliste.arbeidslisteAktiv || bruker.veilederId === ident) &&
+                    (!bruker.huskelapp || bruker.huskelapp?.enhetId === enhet || bruker.veilederId === ident) &&
+                    (!bruker.fargekategori || bruker.fargekategoriEnhetId === enhet || bruker.veilederId === ident)
             );
 
-            const tilordningerBrukereArbeidslisteBlirIkkeSlettet = brukereArbeidslisteBlirIkkeSlettet.map(bruker => ({
+            const tilordningerBrukereBlirIkkeSlettet = brukereVilIkkeBliSlettet.map(bruker => ({
                 fraVeilederId: bruker.veilederId,
                 tilVeilederId: ident,
                 brukerFnr: bruker.fnr
@@ -75,7 +89,7 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
 
             setTilordningerAlle(alleTilordninger);
 
-            setTilordningerBrukereArbeidslisteBlirIkkeSlettet(tilordningerBrukereArbeidslisteBlirIkkeSlettet);
+            setTilordningerBrukereBlirIkkeSlettet(tilordningerBrukereBlirIkkeSlettet);
 
             const fnrBrukereArbeidslisteVilBliSlettet = valgteBrukere.filter(
                 bruker =>
@@ -85,13 +99,33 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
                     bruker.arbeidsliste.navkontorForArbeidsliste !== enhet
             );
 
-            setFnrArbeidslisteBlirSlettet(
-                fnrBrukereArbeidslisteVilBliSlettet.map(bruker => ({
-                    brukerFnr: bruker.fnr
-                }))
+            const fnrBrukereHuskelappVilBliSlettet = valgteBrukere.filter(
+                bruker =>
+                    !!bruker.huskelapp &&
+                    (bruker.veilederId !== ident || bruker.veilederId === null) &&
+                    bruker.huskelapp.enhetId !== null &&
+                    bruker.huskelapp.enhetId !== enhet
             );
 
-            if (fnrBrukereArbeidslisteVilBliSlettet.length > 0) {
+            const fnrBrukereKategoriVilBliSlettet = valgteBrukere.filter(
+                bruker =>
+                    bruker.fargekategori &&
+                    (bruker.veilederId !== ident || bruker.veilederId === null) &&
+                    bruker.fargekategoriEnhetId !== null &&
+                    bruker.fargekategoriEnhetId !== enhet
+            );
+
+            const fnrBrukereArbeidslisteHuskelappEllerFargekategoriVilBliSlettet = [
+                ...fnrBrukereHuskelappVilBliSlettet,
+                ...fnrBrukereArbeidslisteVilBliSlettet,
+                ...fnrBrukereKategoriVilBliSlettet
+            ];
+
+            setFnrIAdvarselslista(
+                fjernduplikatOgMapTilFnrArray(fnrBrukereArbeidslisteHuskelappEllerFargekategoriVilBliSlettet)
+            );
+
+            if (fnrBrukereArbeidslisteHuskelappEllerFargekategoriVilBliSlettet.length > 0) {
                 trackAmplitude(
                     {name: 'modal åpnet', data: {tekst: 'Fikk advarsel om sletting av arbeidsliste'}},
                     {modalId: 'veilarbportefoljeflatefs-advarselOmSlettingAvArbeidsliste'}
@@ -116,18 +150,18 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
             >
                 <Modal.Header>
                     <Heading size="medium" level="2">
-                        Arbeidslistenotat blir slettet
+                        Arbeidslistenotat, huskelapp og/eller kategori blir slettet
                     </Heading>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="advarsel-modal">
                         <BodyShort size="medium">
-                            Arbeidslistenotat for følgende brukere ble opprettet på en annen enhet, og vil bli slettet
-                            ved tildeling av ny veileder:
+                            Arbeidslistenotat, huskelapp og/eller kategori for følgende brukere ble opprettet på en
+                            annen enhet, og vil bli slettet ved tildeling av ny veileder:
                         </BodyShort>
-                        <FnrList listeMedFnr={fnrArbeidslisteBlirSlettet} />
+                        <FnrList listeMedFnr={fnrIAdvarselslista} />
                         <BodyShort size="medium" className="sporsmal-likevel-tidele">
-                            Ønsker du likevel å tildele veilederen til disse brukerne?
+                            Ønsker du likevel å tildele veilederen?
                         </BodyShort>
                     </div>
                     <div className="sletting-arbeidslista-knapp-wrapper">
@@ -136,21 +170,23 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
                             className="knapp-avbryt-tildeling"
                             size="medium"
                             onClick={() => {
-                                trackAmplitude(
-                                    {
-                                        name: 'knapp klikket',
-                                        data: {
-                                            knapptekst: 'Avbryt tildeling for de aktuelle brukerne',
-                                            effekt: 'Avbryter tildeling'
-                                        }
-                                    },
-                                    {modalId: 'veilarbportefoljeflatefs-advarselOmSlettingAvArbeidsliste'}
-                                );
-                                doTildelTilVeileder(tilordningerBrukereArbeidslisteBlirIkkeSlettet, ident);
+                                if (tilordningerBrukereBlirIkkeSlettet.length > 0) {
+                                    trackAmplitude(
+                                        {
+                                            name: 'knapp klikket',
+                                            data: {
+                                                knapptekst: 'Avbryt tildeling for de aktuelle brukerne',
+                                                effekt: 'Avbryter tildeling'
+                                            }
+                                        },
+                                        {modalId: 'veilarbportefoljeflatefs-advarselOmSlettingAvArbeidsliste'}
+                                    );
+                                    doTildelTilVeileder(tilordningerBrukereBlirIkkeSlettet, ident);
+                                }
                                 lukkFjernModal();
                             }}
                         >
-                            Avbryt tildeling for de aktuelle brukerne
+                            Avbryt tildeling for nevnte bruker(e)
                         </Button>
                         <Button
                             type={'submit'}
@@ -184,52 +220,10 @@ function TildelVeileder({oversiktType, closeInput}: TildelVeilederProps) {
                         onChange={setIdent}
                         data={data}
                         btnOnClick={() => onSubmit()}
-                        oversiktType={oversiktType}
                     />
                 )}
             </SokFilter>
         </>
-    );
-}
-
-interface TildelVeilederRendererProps {
-    data: VeilederModell[];
-    ident: string | null;
-    onChange: (ident: string) => void;
-    btnOnClick: () => void;
-    oversiktType: OversiktType | undefined;
-}
-
-function TildelVeilederRenderer({data, ident, onChange, btnOnClick}: TildelVeilederRendererProps) {
-    return (
-        <form className="skjema radio-filterform" data-testid="tildel-veileder_dropdown">
-            <RadioGroup hideLegend legend="" className="radio-filterform__valg" onChange={onChange}>
-                {data.map((veileder, index) => (
-                    <Radio
-                        data-testid={`tildel-veileder_valg_${index}`}
-                        type={'button'}
-                        key={veileder.ident}
-                        name="veileder"
-                        size="small"
-                        value={veileder.ident}
-                        className={'navds-radio'}
-                    >{`${veileder.etternavn}, ${veileder.fornavn}`}</Radio>
-                ))}
-            </RadioGroup>
-            <div className="filterform__under-valg">
-                <Button
-                    size="small"
-                    onClick={btnOnClick}
-                    className={classNames('knapp', 'knapp--mini', {
-                        'knapp--hoved': ident
-                    })}
-                    type={'button'}
-                    data-testid={ident ? 'tildel-veileder_velg-knapp' : 'tildel-veileder_lukk-knapp'}
-                >
-                    {ident ? 'Velg' : 'Lukk'}
-                </Button>
-            </div>
-        </form>
     );
 }
 

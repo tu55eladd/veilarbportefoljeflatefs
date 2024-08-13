@@ -1,11 +1,38 @@
 .rediger-huskelapp-modal .navds-body-short,
 .rediger-huskelapp-modal .navds-alert__wrapper {
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.25rem;
 }
 
 .rediger-huskelapp-modal {
     min-width: fit-content;
+}
+
+.rediger-huskelapp-modal-header {
+    display: flex;
+    align-items: center;
+}
+
+.rediger-huskelapp-modal-header .rediger-huskelapp-modal-header-ikon svg {
+    width: 1.5rem;
+    height: 24px;
+    margin-right: 0.3rem;
+}
+
+.rediger-huskelapp-modal-personinfo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.5rem;
+    row-gap: 0.1rem;
+}
+
+.rediger-huskelapp-modal-personinfo .rediger-huskelapp-modal-header-copybutton {
+    color: var(--a-text-default);
+}
+
+.rediger-huskelapp-modal-header-tekst {
+    margin-left: 0.3rem;
 }
 
 .rediger-huskelapp-modal .rediger-huskelapp-modal__body {
@@ -49,7 +76,7 @@
 }
 
 .rediger-huskelapp-modal .gammel-arbeidsliste li div {
-    font-size: var(--a-font-size-medium) !important; /* Overskriv stylinga '14px !important' frå style.css */
+    font-size: var(--a-font-size-medium) !important; /* Overskriv stylinga '0.875rem !important' frå style.css */
 }
 
 .rediger-huskelapp-modal .rediger-huskelapp-modal-pil {
@@ -77,24 +104,16 @@
 }
 
 .rediger-huskelapp-modal .rediger-huskelapp-modal__footer {
-    align-items: end; /* Dyttar knappane til botnen når slettebekreftinga er synleg */
+    align-items: flex-end; /* Dyttar knappane til botnen når slettebekreftinga er synleg */
 }
 
 .veilarbportefoljeflatefs .ny-huskelapp-form .navds-label {
-    /* !important er brukt for å overskrive hardkodinga av alle labels til 14px i style.css */
+    /* !important er brukt for å overskrive hardkodinga av alle labels til 0.875rem i style.css */
     font-size: var(--a-font-size-medium) !important;
 }
 
-.rediger-huskelapp-modal .sletting-av-arbeidsliste-feilet {
-    margin-bottom: var(--a-spacing-4);
-}
-
-.rediger-huskelapp-modal .slett-arbeidsliste__knappevalg {
-    margin-top: var(--a-spacing-2);
-    display: flex;
-    gap: 0.5rem;
-}
-.rediger-huskelapp-modal .slett-arbeidsliste__knappevalg > button {
-    /* Motverkar margin:auto frå designsystemet for knappar i modalfooter  */
-    margin: 0;
+.rediger-huskelapp-modal.fiks-for-gammel-datovelger {
+    /* Fiks som gjer heile datovelgaren synleg sjølv om han flyt ut over grensene til foreldremodalen. */
+    /* Denne kan fjernast når vi ikkje bruker Datepicker frå nav-datovelger meir */
+    overflow: visible;
 }

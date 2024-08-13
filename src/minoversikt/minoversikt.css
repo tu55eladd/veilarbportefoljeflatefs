@@ -1,5 +1,5 @@
 .veilarbportefoljeflatefs .minoversikt-liste__wrapper {
-    background-color: #f4f4f4;
+    background-color: var(--a-bg-subtle);
     border-top: none;
     border-bottom: none;
     border-radius: 0 0 4px 4px;
@@ -53,4 +53,12 @@
 .tomt-arbeidslisteikon {
     margin-left: 0.5rem;
     margin-right: 1.125rem;
+}
+
+.veilarbportefoljeflatefs .tomt-huskelapp-eller-fargekategori-felt {
+    margin-left: 0.5rem;
+    margin-right: 1.125rem;
+    width: calc(19 / 16 * 1rem);
+    height: calc(19 / 16 * 1rem);
+    display: block;
 }

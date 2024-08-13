@@ -1,14 +1,7 @@
 import React, {useState} from 'react';
-import {AnyAction} from 'redux';
-import {useDispatch} from 'react-redux';
-import {ThunkDispatch} from 'redux-thunk';
 import {BrukerModell, HuskelappModell} from '../../../model-interfaces';
-import {RedigerHuskelappModal} from '../redigering/RedigerHuskelappModal';
-import {AppState} from '../../../reducer';
-import {usePortefoljeSelector} from '../../../hooks/redux/use-portefolje-selector';
-import {OversiktType} from '../../../ducks/ui/listevisning';
+import {HuskelappModal} from '../redigering/HuskelappModal';
 import {HuskelappForPanel} from './HuskelappForPanel';
-import {handleSlettHuskelapp} from '../redigering/slettHuskelapp';
 import './panelvisning.css';
 
 interface Props {
@@ -17,26 +10,21 @@ interface Props {
 }
 
 export const HuskelappPanelvisning = ({bruker, huskelapp}: Props) => {
-    const [skalViseRedigerHuskelappModal, setSkalViseRedigerHuskelappModal] = useState<boolean>(false);
-    const dispatch: ThunkDispatch<AppState, any, AnyAction> = useDispatch();
-    const {enhetId} = usePortefoljeSelector(OversiktType.minOversikt);
-
-    const visRedigeringsmodal = () => setSkalViseRedigerHuskelappModal(true);
-    const slettHuskelapp = () => handleSlettHuskelapp(dispatch, huskelapp, bruker.fnr, enhetId!);
+    const [skalViseHuskelappModal, setSkalViseHuskelappModal] = useState<boolean>(false);
 
     return (
         <div className="huskelapp-panel">
             <HuskelappForPanel
                 huskelapp={huskelapp}
-                onSlettHuskelapp={slettHuskelapp}
-                onEndreHuskelapp={visRedigeringsmodal}
+                bruker={bruker}
+                onEndreHuskelapp={() => setSkalViseHuskelappModal(true)}
             />
-            {skalViseRedigerHuskelappModal && (
-                <RedigerHuskelappModal
+            {skalViseHuskelappModal && (
+                <HuskelappModal
                     onModalClose={() => {
-                        setSkalViseRedigerHuskelappModal(false);
+                        setSkalViseHuskelappModal(false);
                     }}
-                    isModalOpen={skalViseRedigerHuskelappModal}
+                    isModalOpen={skalViseHuskelappModal}
                     huskelapp={huskelapp}
                     bruker={bruker}
                 />

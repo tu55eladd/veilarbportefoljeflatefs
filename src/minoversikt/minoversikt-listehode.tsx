@@ -1,7 +1,7 @@
 import * as React from 'react';
 import SorteringHeader from '../components/tabell/sortering-header';
 import SorteringHeaderIkon from '../components/tabell/sortering-header-ikon';
-import {BrukerModell, FiltervalgModell, Sorteringsfelt, Sorteringsrekkefolge} from '../model-interfaces';
+import {FiltervalgModell, Sorteringsfelt, Sorteringsrekkefolge} from '../model-interfaces';
 import {AktiviteterValg} from '../ducks/filtrering';
 import {
     DAGPENGER_YTELSE,
@@ -45,15 +45,14 @@ interface MinOversiktListehodeProps {
     sorteringOnClick: (sortering: string) => void;
     sorteringsfelt: OrNothing<Sorteringsfelt>;
     filtervalg: FiltervalgModell;
-    brukere: BrukerModell[];
     valgteKolonner: Kolonne[];
 }
 
 function MinOversiktListeHode({
     sorteringsrekkefolge,
     sorteringOnClick,
-    filtervalg,
     sorteringsfelt,
+    filtervalg,
     valgteKolonner
 }: MinOversiktListehodeProps) {
     const vis_kolonner_for_vurderingsfrist_aap = useFeatureSelector()(VIS_AAP_VURDERINGSFRISTKOLONNER);
@@ -72,7 +71,7 @@ function MinOversiktListeHode({
         DAGPENGER_YTELSE_LONNSGARANTIMIDLER
     ].some(y => y === ytelse!);
     const ytelseUtlopsdatoNavn = ytelseUtlopsSortering[ytelse!];
-    const ferdigfilterListe = !!filtervalg ? filtervalg.ferdigfilterListe : '';
+    const ferdigfilterListe = filtervalg ? filtervalg.ferdigfilterListe : '';
     const iAvtaltAktivitet =
         !!ferdigfilterListe?.includes(I_AVTALT_AKTIVITET) && valgteKolonner.includes(Kolonne.AVTALT_AKTIVITET);
 
@@ -81,6 +80,9 @@ function MinOversiktListeHode({
 
     const forenkletAktivitet =
         harValgteAktiviteter(filtervalg.aktiviteterForenklet) && valgteKolonner.includes(Kolonne.UTLOP_AKTIVITET);
+
+    const tiltaksType =
+        harValgteAktiviteter(filtervalg.tiltakstyper) && valgteKolonner.includes(Kolonne.UTLOP_AKTIVITET);
 
     return (
         <div className="brukerliste__header brukerliste__sorteringheader">
@@ -479,7 +481,7 @@ function MinOversiktListeHode({
                     rekkefolge={sorteringsrekkefolge}
                     erValgt={sorteringsfelt === Sorteringsfelt.VALGTE_AKTIVITETER}
                     tekst="Neste utløpsdato valgt aktivitet"
-                    skalVises={avansertAktivitet || forenkletAktivitet}
+                    skalVises={avansertAktivitet || forenkletAktivitet || tiltaksType}
                     className="col col-xs-2"
                     title='Neste utløpsdato på avtalt aktivitet under "Planlegger" eller "Gjennomfører"'
                     headerId="valgte-aktiviteter"
@@ -645,14 +647,14 @@ function MinOversiktListeHode({
                     skalVises={valgteKolonner.includes(Kolonne.HAR_BARN_UNDER_18)}
                 />
                 <SorteringHeader
-                    sortering={Sorteringsfelt.BRUKERS_SITUASJON_SIST_ENDRET}
+                    sortering={Sorteringsfelt.UTDANNING_OG_SITUASJON_SIST_ENDRET}
                     onClick={sorteringOnClick}
                     rekkefolge={sorteringsrekkefolge}
-                    erValgt={sorteringsfelt === Sorteringsfelt.BRUKERS_SITUASJON_SIST_ENDRET}
-                    tekst="Dato endret situasjon"
+                    erValgt={sorteringsfelt === Sorteringsfelt.UTDANNING_OG_SITUASJON_SIST_ENDRET}
+                    tekst="Dato sist endret"
                     className="col col-xs-2"
-                    headerId="dato-endret-situasjon"
-                    skalVises={valgteKolonner.includes(Kolonne.BRUKERS_SITUASJON_SIST_ENDRET)}
+                    headerId="dato-sist-endret-utdanning-situasjon"
+                    skalVises={valgteKolonner.includes(Kolonne.UTDANNING_OG_SITUASJON_SIST_ENDRET)}
                 />
                 <SorteringHeader
                     sortering={Sorteringsfelt.HUSKELAPP_KOMMENTAR}

@@ -1,27 +1,26 @@
-import * as React from 'react';
-import {useState} from 'react';
-import RedigerArbeidslisteForm from './rediger-arbeidsliste-form';
-import {BrukerModell, KategoriModell} from '../../../model-interfaces';
+import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik, FormikProps} from 'formik';
+import moment from 'moment';
+import {Button, Modal} from '@navikt/ds-react';
+import RedigerArbeidslisteForm from './rediger-arbeidsliste-form';
+import {BrukerModell, KategoriModell} from '../../../model-interfaces';
 import {STATUS} from '../../../ducks/utils';
 import {visServerfeilModal} from '../../../ducks/modal-serverfeil';
 import {markerAlleBrukere, oppdaterArbeidslisteForBruker} from '../../../ducks/portefolje';
 import {redigerArbeidslisteAction} from '../../../ducks/arbeidsliste';
-import moment from 'moment';
 import {OrNothing} from '../../../utils/types/types';
-import './arbeidsliste.css';
 import {logEvent} from '../../../utils/frontend-logger';
 import {skjulModal, VIS_FJERN_ARBEIDSLISTE_MODAL, visFjernArbeidslisteModal} from '../../../ducks/modal';
 import {AppState} from '../../../reducer';
 import FjernArbeidslisteModal from './fjern-fra-arbeidsliste-modal';
-import {Button, Modal} from '@navikt/ds-react';
 import LasterModal from '../lastermodal/laster-modal';
 import {trackAmplitude} from '../../../amplitude/amplitude';
+import './arbeidsliste.css';
 
 interface ArbeidslisteModalRedigerProps {
     bruker: BrukerModell;
-    innloggetVeileder: OrNothing<string>;
+    innloggetVeilederIdent: OrNothing<string>;
     sistEndretDato: Date;
     sistEndretAv?: string;
     settMarkert: (fnr: string, markert: boolean) => void;
@@ -39,7 +38,7 @@ function ArbeidslisteModalRediger({
     sistEndretAv,
     sistEndretDato,
     settMarkert,
-    innloggetVeileder
+    innloggetVeilederIdent
 }: ArbeidslisteModalRedigerProps) {
     const arbeidslisteStatus = useSelector((state: AppState) => state.arbeidsliste.status);
     const statusLaster = arbeidslisteStatus !== undefined && arbeidslisteStatus === STATUS.PENDING;
@@ -63,8 +62,8 @@ function ArbeidslisteModalRediger({
     };
 
     const initialValues = {
-        overskrift: bruker.arbeidsliste.overskrift || '',
-        kommentar: bruker.arbeidsliste.kommentar || '',
+        overskrift: bruker.arbeidsliste.overskrift ?? '',
+        kommentar: bruker.arbeidsliste.kommentar ?? '',
         frist: bruker.arbeidsliste.frist ? moment(bruker.arbeidsliste.frist).format('YYYY-MM-DD') : '',
         kategori: bruker.arbeidsliste.kategori
     };
@@ -101,7 +100,7 @@ function ArbeidslisteModalRediger({
                         dispatch(
                             redigerArbeidslisteAction(values, {
                                 bruker,
-                                innloggetVeileder
+                                innloggetVeilederIdent: innloggetVeilederIdent
                             })
                         );
                         trackAmplitude(
@@ -160,7 +159,7 @@ function ArbeidslisteModalRediger({
     );
 }
 
-export function oppdaterArbeidsListeState(res, arbeidsliste, innloggetVeileder, fnr, dispatch) {
+export function oppdaterArbeidsListeState(res, arbeidsliste, innloggetVeilederIdent, fnr, dispatch) {
     if (!res) {
         return visServerfeilModal()(dispatch);
     }
@@ -168,7 +167,7 @@ export function oppdaterArbeidsListeState(res, arbeidsliste, innloggetVeileder, 
     const arbeidslisteToDispatch = Array.of({
         ...arbeidsliste,
         fnr,
-        sistEndretAv: {veilederId: innloggetVeileder},
+        sistEndretAv: {veilederId: innloggetVeilederIdent},
         endringstidspunkt: new Date().toISOString()
     });
 

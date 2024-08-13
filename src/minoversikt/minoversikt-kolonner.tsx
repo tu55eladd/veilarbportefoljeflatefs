@@ -81,7 +81,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
     const ytelseAapVurderingsfristErValgtKolonne = valgteKolonner.includes(Kolonne.VURDERINGSFRIST_YTELSE);
     const ytelseAapVedtaksperiodeErValgtKolonne = valgteKolonner.includes(Kolonne.VEDTAKSPERIODE);
     const ytelseAapRettighetsperiodeErValgtKolonne = valgteKolonner.includes(Kolonne.RETTIGHETSPERIODE);
-    const ferdigfilterListe = !!filtervalg ? filtervalg.ferdigfilterListe : '';
+    const ferdigfilterListe = filtervalg ? filtervalg.ferdigfilterListe : '';
     const rettighetsPeriode = aapRettighetsperiode(ytelse, bruker.aapmaxtidUke, bruker.aapUnntakUkerIgjen);
     const vurderingsfristAAP = aapVurderingsfrist(
         bruker.innsatsgruppe,
@@ -92,8 +92,9 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
     const overgangsstonadUtlopsdato = bruker.ensligeForsorgereOvergangsstonad?.utlopsDato
         ? new Date(bruker.ensligeForsorgereOvergangsstonad?.utlopsDato)
         : null;
-    const brukersSituasjonSistEndret = bruker.brukersSituasjonSistEndret
-        ? new Date(bruker.brukersSituasjonSistEndret)
+
+    const brukersUtdanningOgSituasjonSistEndret = bruker.utdanningOgSituasjonSistEndret
+        ? new Date(bruker.utdanningOgSituasjonSistEndret)
         : null;
 
     const huskeLappFrist = bruker.huskelapp?.frist ? new Date(bruker.huskelapp.frist) : null;
@@ -115,7 +116,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
 
     const barnAlderTilStr = (dataOmBarn: BarnUnder18Aar[]) => {
         const lf = new Intl.ListFormat('no');
-        var dataOmBarnSorted = dataOmBarn
+        const dataOmBarnSorted = dataOmBarn
             .map(x => x.alder)
             .sort((a, b) => (a < b ? -1 : 1))
             .map(x => String(x));
@@ -142,7 +143,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
             <TekstKolonne
                 className="col col-xs-2"
                 tekst={
-                    bruker.hovedStatsborgerskap && bruker.hovedStatsborgerskap.statsborgerskap
+                    bruker.hovedStatsborgerskap?.statsborgerskap
                         ? capitalize(bruker.hovedStatsborgerskap.statsborgerskap)
                         : '-'
                 }
@@ -152,7 +153,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
                 className="col col-xs-2"
                 skalVises={valgteKolonner.includes(Kolonne.STATSBORGERSKAP_GYLDIG_FRA)}
                 tekst={
-                    bruker.hovedStatsborgerskap && bruker.hovedStatsborgerskap.gyldigFra
+                    bruker.hovedStatsborgerskap?.gyldigFra
                         ? toDateString(bruker.hovedStatsborgerskap.gyldigFra)!.toString()
                         : '-'
                 }
@@ -240,7 +241,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
                 <TekstKolonne
                     className="col col-xs-2"
                     skalVises={ytelseAapVurderingsfristErValgtKolonne && erAapYtelse}
-                    tekst={vurderingsfristAAP ? vurderingsfristAAP : '–'}
+                    tekst={vurderingsfristAAP || '–'}
                 />
             )}
             <UkeKolonne
@@ -344,7 +345,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
                 }
             />
             <TekstKolonne
-                tekst={!!bruker.utkast14aAnsvarligVeileder ? bruker.utkast14aAnsvarligVeileder : ' '}
+                tekst={bruker.utkast14aAnsvarligVeileder ? bruker.utkast14aAnsvarligVeileder : ' '}
                 skalVises={
                     !!ferdigfilterListe?.includes(UNDER_VURDERING) &&
                     valgteKolonner.includes(Kolonne.ANSVARLIG_VEILEDER_FOR_VEDTAK)
@@ -394,7 +395,7 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
                 className="col col-xs-2"
             />
             <TekstKolonne
-                tekst={oppfolingsdatoEnsligeForsorgere(bruker.ensligeForsorgereOvergangsstonad?.yngsteBarnsFødselsdato)}
+                tekst={oppfolingsdatoEnsligeForsorgere(bruker.ensligeForsorgereOvergangsstonad?.yngsteBarnsFodselsdato)}
                 skalVises={valgteKolonner.includes(Kolonne.ENSLIGE_FORSORGERE_OM_BARNET)}
                 className="col col-xs-2"
             />
@@ -404,14 +405,19 @@ function MinoversiktDatokolonner({className, bruker, enhetId, filtervalg, valgte
                 tekst={bruker.barnUnder18AarData ? brukerBarnUnder18AarInfo(bruker.barnUnder18AarData) : '-'}
             />
             <DatoKolonne
-                dato={brukersSituasjonSistEndret}
-                skalVises={valgteKolonner.includes(Kolonne.BRUKERS_SITUASJON_SIST_ENDRET)}
+                dato={brukersUtdanningOgSituasjonSistEndret}
+                skalVises={valgteKolonner.includes(Kolonne.UTDANNING_OG_SITUASJON_SIST_ENDRET)}
                 className="col col-xs-2"
             />
             <TekstKolonne
                 className="col col-xs-2"
                 skalVises={valgteKolonner.includes(Kolonne.HUSKELAPP_KOMMENTAR)}
-                tekst={bruker.huskelapp?.kommentar ? truncateTekst(bruker.huskelapp.kommentar) : ' '}
+                tekst={
+                    bruker.huskelapp?.kommentar
+                        ? // Fjerner eventuelle linjeskift før teksten og viser kun tekst fram til første linjeskift eller maks 30 tegn, ref. truncateTekst()
+                          truncateTekst(bruker.huskelapp.kommentar.trimStart().split('\n')[0])
+                        : ' '
+                }
             />
             <DatoKolonne
                 dato={huskeLappFrist}

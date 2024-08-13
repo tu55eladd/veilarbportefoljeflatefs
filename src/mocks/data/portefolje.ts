@@ -109,7 +109,7 @@ function lagYtelse() {
 function lagOverskrift() {
     const maybeOverskrift = rnd(0, 1);
     if (maybeOverskrift > 0.5) {
-        return faker.lorem.word().substring(0, 12);
+        return faker.lorem.word();
     }
     return null;
 }
@@ -185,14 +185,18 @@ function lagArbeidsliste(aktoerid, fnr) {
 
 const lagHuskelapp = fnr => {
     const maybeHuskelapp = rnd(0, 1);
+    const huskeklappId = rnd(1, 1000);
     if (maybeHuskelapp > 0.75) {
         return null;
     }
+
     return {
-        huskelappId: lagOverskrift(),
+        huskelappId: huskeklappId,
         brukerFnr: fnr,
-        kommentar: lagOverskrift(),
-        frist: moment().add(rnd(0, 20), 'days').add(rnd(0, 23), 'hours').format('YYYY-MM-DD')
+        kommentar: '\n\n' + lagOverskrift() + '\n\nDette skal bort ',
+        frist: moment().add(rnd(0, 20), 'days').add(rnd(0, 23), 'hours').format('YYYY-MM-DD'),
+        enhetId: maybeHuskelapp > 0.7 ? '0220' : '1234',
+        sistEndretAv: 'Meg selv'
     };
 };
 
@@ -275,8 +279,9 @@ function lagBruker(sikkerhetstiltak = []) {
         avvik14aVedtak: randomAvvik14aVedtak(),
         ensligeForsorgereOvergangsstonad: lagRandomOvergangsstonadForEnsligForsorger(),
         barnUnder18AarData: hentBarnUnder18Aar(),
-        brukersSituasjonSistEndret: randomDate({past: false}),
+        utdanningOgSituasjonSistEndret: randomDate({past: false}),
         fargekategori: lagFargekategori(),
+        fargekategoriEnhetId: '1234',
         huskelapp
     };
 }
@@ -420,8 +425,10 @@ export function hentHuskelappForBruker(fnr: string, enhetId: string) {
     return {
         huskelappId: lagOverskrift(),
         brukerFnr: fnr,
-        kommentar: lagOverskrift(),
-        frist: moment().add(rnd(0, 20), 'days').add(rnd(0, 23), 'hours').format('YYYY-MM-DD')
+        kommentar:
+            '\n\n\n\n   HEIII   \nasdfølkjasdølfkajsdøflkajsdølfjaksdfølajskdøflajsdølfkjasødlfjaøsldjfølasjdølfjasøjldfjaøldf',
+        frist: moment().add(rnd(0, 20), 'days').add(rnd(0, 23), 'hours').format('YYYY-MM-DD'),
+        endretAv: 'Meg selv'
     };
 }
 
@@ -437,6 +444,7 @@ export function hentMockPlan(): MoteData[] {
     function randomDate(start, end) {
         return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toString();
     }
+
     function motedataRandomDager(antallMoter: number): MoteData[] {
         const moteliste: MoteData[] = [];
         for (let i = 0; i < antallMoter; i++) {
@@ -460,6 +468,11 @@ export function hentMockPlan(): MoteData[] {
             dato: '2022-03-23T12:02:35.636Z',
             deltaker: deltaker1,
             avtaltMedNav: true
+        },
+        {
+            dato: '2022-03-23T13:00:00.636Z',
+            deltaker: deltaker2,
+            avtaltMedNav: false
         },
         {
             dato: '2022-03-25T15:02:35.636Z',
@@ -491,7 +504,7 @@ const lagRandomOvergangsstonadForEnsligForsorger = (): EnsligeForsorgereOvergang
         vedtaksPeriodetype: hentRandomVedtaksperiodeType(),
         harAktivitetsplikt: hentRandomAktivitetsplikt(),
         utlopsDato: new Date(randomDate({past: false})),
-        yngsteBarnsFødselsdato: new Date(randomDate({past: false}))
+        yngsteBarnsFodselsdato: new Date(randomDate({past: false}))
     };
 };
 
@@ -541,7 +554,7 @@ export const brukere = new Array(123).fill(0).map(() => lagBruker());
 
 export const testperson_uten_arbeidsliste = lagBruker();
 testperson_uten_arbeidsliste.arbeidsliste = tomArbeidsliste;
-testperson_uten_arbeidsliste.fornavn = 'Aase';
+testperson_uten_arbeidsliste.fornavn = 'Klara Margrethe';
 testperson_uten_arbeidsliste.etternavn = 'Uten Arbeidsliste';
 
 export const testperson_uten_arbeidsliste2 = lagBruker();
