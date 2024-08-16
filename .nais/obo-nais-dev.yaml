@@ -49,6 +49,8 @@ spec:
           namespace: obo
         - application: veilarbfilter
           namespace: obo
+        - application: veilarbveileder
+          namespace: obo
         - application: endringslogg
           namespace: pto
         - application: modiacontextholder
@@ -56,7 +58,6 @@ spec:
       external:
         - host: veilarbportefolje.dev-fss-pub.nais.io
         - host: veilarbvedtaksstotte.dev-fss-pub.nais.io
-        - host: veilarbveileder.dev-fss-pub.nais.io
         - host: veilarboppfolging.dev-fss-pub.nais.io
   env:
     - name: JSON_CONFIG
@@ -120,12 +121,12 @@ spec:
             },
             {
               "fromPath": "/veilarbveileder",
-              "toUrl": "https://veilarbveileder.dev-fss-pub.nais.io",
+              "toUrl": "http://veilarbveileder.obo",
               "preserveFromPath": true,
               "toApp": {
                 "name": "veilarbveileder",
-                "namespace": "pto",
-                "cluster": "dev-fss"
+                "namespace": "obo",
+                "cluster": "dev-gcp"
               }
             },
             {
