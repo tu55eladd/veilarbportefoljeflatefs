@@ -13,6 +13,7 @@ import {fargekategoriUnderfilterKonfigurasjoner} from '../../filtrering/filtreri
 import {useEnhetSelector} from '../../hooks/redux/use-enhet-selector';
 import {useSelectGjeldendeVeileder} from '../../hooks/portefolje/use-select-gjeldende-veileder';
 import {BekreftEndreFargekategoriPaMangeModal} from './bekreft-endre-fargekategori-pa-mange-modal';
+import {mapFargekategoriTilArbeislistekategori} from './mapFargekategoriTilArbeislistekategori';
 
 interface FargekategoriPopoverProps {
     buttonRef: React.RefObject<HTMLButtonElement>;
@@ -80,8 +81,12 @@ export const FargekategoriPopover = ({
                 const nyStatustallId = fargekategoriUnderfilterKonfigurasjoner.find(
                     konfigurasjon => konfigurasjon.filterId === fargekategori
                 )?.statustallId;
+                const gammelArbeidslistekategori = mapFargekategoriTilArbeislistekategori(gammelFargekategori);
+                const nyArbeidslistekategori = mapFargekategoriTilArbeislistekategori(fargekategori);
                 await dispatch(leggTilStatustall(gammelStatustallId, -1));
                 await dispatch(leggTilStatustall(nyStatustallId, 1));
+                gammelArbeidslistekategori && (await dispatch(leggTilStatustall(gammelArbeidslistekategori, -1)));
+                nyArbeidslistekategori && (await dispatch(leggTilStatustall(nyArbeidslistekategori, 1)));
             } else {
                 //Venter fordi det returneres FARGEKATEGORI_OPPDATER_OK før statustall er oppdatert i Opensearch
                 await delay(500);

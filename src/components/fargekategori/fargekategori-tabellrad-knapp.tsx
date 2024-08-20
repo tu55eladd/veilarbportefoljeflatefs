@@ -38,6 +38,7 @@ export default function FargekategoriTabellradKnapp({bruker}: FargekategoriPopov
                 setPopoverOpen={setPopoverOpen}
                 valgteBrukereFnrs={[bruker.fnr]}
                 fargekategori={bruker.fargekategori}
+                harArbeidsliste={bruker.arbeidsliste}
             />
         </>
     );
