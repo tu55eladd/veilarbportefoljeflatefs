@@ -90,7 +90,7 @@ spec:
           "proxies": [
             {
               "fromPath": "/veilarbportefolje",
-              "toUrl": "http://veilarbportefolje.obo",
+              "toUrl": "https://veilarbportefolje-gcp.intern.nav.no",
               "preserveFromPath": true,
               "toApp": {
                 "name": "veilarbportefolje",
