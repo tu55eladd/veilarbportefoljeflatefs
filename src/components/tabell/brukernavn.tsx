@@ -30,19 +30,21 @@ const settSammenNavn = (bruker: BrukerModell) => {
 
 const BrukerNavn = ({className, bruker, enhetId}: BrukerNavnProps) => {
     const navn = settSammenNavn(bruker);
+    const timeout = 2000;
 
     const handterKlikk = async () => {
+        const timeout = 0;
         console.log('Brukernavn, handterKlikk.');
         setTimeout(() => {
             return oppdaterBrukerIKontekstOgNavigerTilLenke(bruker.fnr, getVeilarbpersonflateUrl(null, enhetId));
-        }, 2000);
+        }, timeout);
     };
 
     const handterKlikkNyFane = async () => {
         console.log('Brukernavn, handterKlikkNyFane.');
         setTimeout(() => {
             return oppdaterBrukerIKontekstOgNavigerTilLenke(bruker.fnr, getVeilarbpersonflateUrl(null, enhetId), true);
-        }, 2000);
+        }, timeout);
     };
 
     return (

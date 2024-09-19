@@ -301,6 +301,7 @@ export const oppfolingsdatoEnsligeForsorgere = (alderBarn?: Date) => {
 };
 
 export const oppdaterBrukerIKontekstOgNavigerTilLenke = async (fnr: string, lenke: string, apneNyFane?: boolean) => {
+    const timeout = 2000;
     console.log(
         'oppdaterBrukerIKontekstOgNavigerTilLenke. Fnr: ',
         fnr,
@@ -318,17 +319,17 @@ export const oppdaterBrukerIKontekstOgNavigerTilLenke = async (fnr: string, lenk
                     console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = true');
                     setTimeout(() => {
                         return window.open(lenke, '_blank', 'noopener,noreferrer');
-                    }, 2000);
+                    }, timeout);
                 } else {
                     console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = false');
 
                     setTimeout(() => {
                         return (window.location.href = lenke);
-                    }, 2000);
+                    }, timeout);
                 }
-            }, 2000);
+            }, timeout);
         });
-    }, 2000);
+    }, timeout);
 };
 
 /**

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO ta bort igjen
 import {FargekategoriDataModell, FiltervalgModell, VeilederModell} from '../model-interfaces';
 import {NyttLagretFilter, RedigerLagretFilter, SorteringOgId} from '../ducks/lagret-filter';
 import {erDev, loginUrl} from '../utils/url-utils';
@@ -342,13 +344,20 @@ export const hentSesjonMetadata = async (): Promise<SessionMeta> => {
 };
 
 export const settBrukerIKontekst = async (fnr: string): Promise<void> => {
+    const timeout = 2000;
+
+    console.log('settBrukerIKotekst, fnr: ', fnr);
     const respons = await fetch('/modiacontextholder/api/context', {
         ...MED_CREDENTIALS,
         method: 'post',
         body: JSON.stringify({verdi: fnr, eventType: 'NY_AKTIV_BRUKER'})
     });
+    console.log('settBrukerIKotekst, respons: ', respons);
+    console.log('settBrukerIKotekst, responsstatus: ', respons.status);
 
-    return sjekkStatuskode(respons);
+    setTimeout(() => {
+        return sjekkStatuskode(respons);
+    }, timeout);
 };
 
 export const hentBrukerIKontekst = async () => {
