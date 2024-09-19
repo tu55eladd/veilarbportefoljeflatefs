@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// TODO ta bort igjen
 import {AktiviteterModell, BrukerModell, FiltervalgModell, Innsatsgruppe} from '../model-interfaces';
 import {Maybe} from './types';
 import moment from 'moment/moment';
@@ -298,14 +300,27 @@ export const oppfolingsdatoEnsligeForsorgere = (alderBarn?: Date) => {
     return `${formatertDato} (Barn 1 år)`;
 };
 
-export const oppdaterBrukerIKontekstOgNavigerTilLenke = (fnr: string, lenke: string, apneNyFane?: boolean) =>
-    settBrukerIKontekst(fnr).then(() => {
+export const oppdaterBrukerIKontekstOgNavigerTilLenke = (fnr: string, lenke: string, apneNyFane?: boolean) => {
+    console.log(
+        'oppdaterBrukerIKontekstOgNavigerTilLenke. Fnr: ',
+        fnr,
+        ', lenke: ',
+        lenke,
+        ', apneNyFane: ',
+        apneNyFane || 'undefined'
+    );
+    return settBrukerIKontekst(fnr).then(() => {
+        console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst');
+
         if (apneNyFane) {
+            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = true');
             window.open(lenke, '_blank', 'noopener,noreferrer');
         } else {
+            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = false');
             window.location.href = lenke;
         }
     });
+};
 
 /**
  * Utfør en handling dersom det klikkes utenfor et/flere element(er).
