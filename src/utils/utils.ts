@@ -300,7 +300,7 @@ export const oppfolingsdatoEnsligeForsorgere = (alderBarn?: Date) => {
     return `${formatertDato} (Barn 1 år)`;
 };
 
-export const oppdaterBrukerIKontekstOgNavigerTilLenke = (fnr: string, lenke: string, apneNyFane?: boolean) => {
+export const oppdaterBrukerIKontekstOgNavigerTilLenke = async (fnr: string, lenke: string, apneNyFane?: boolean) => {
     console.log(
         'oppdaterBrukerIKontekstOgNavigerTilLenke. Fnr: ',
         fnr,
@@ -309,17 +309,26 @@ export const oppdaterBrukerIKontekstOgNavigerTilLenke = (fnr: string, lenke: str
         ', apneNyFane: ',
         apneNyFane || 'undefined'
     );
-    return settBrukerIKontekst(fnr).then(() => {
-        console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst');
+    setTimeout(() => {
+        return settBrukerIKontekst(fnr).then(async () => {
+            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst');
 
-        if (apneNyFane) {
-            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = true');
-            window.open(lenke, '_blank', 'noopener,noreferrer');
-        } else {
-            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = false');
-            window.location.href = lenke;
-        }
-    });
+            setTimeout(() => {
+                if (apneNyFane) {
+                    console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = true');
+                    setTimeout(() => {
+                        return window.open(lenke, '_blank', 'noopener,noreferrer');
+                    }, 2000);
+                } else {
+                    console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = false');
+
+                    setTimeout(() => {
+                        return (window.location.href = lenke);
+                    }, 2000);
+                }
+            }, 2000);
+        });
+    }, 2000);
 };
 
 /**

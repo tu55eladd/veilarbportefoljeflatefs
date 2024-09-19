@@ -31,14 +31,18 @@ const settSammenNavn = (bruker: BrukerModell) => {
 const BrukerNavn = ({className, bruker, enhetId}: BrukerNavnProps) => {
     const navn = settSammenNavn(bruker);
 
-    const handterKlikk = () => {
+    const handterKlikk = async () => {
         console.log('Brukernavn, handterKlikk.');
-        return oppdaterBrukerIKontekstOgNavigerTilLenke(bruker.fnr, getVeilarbpersonflateUrl(null, enhetId));
+        setTimeout(() => {
+            return oppdaterBrukerIKontekstOgNavigerTilLenke(bruker.fnr, getVeilarbpersonflateUrl(null, enhetId));
+        }, 2000);
     };
 
-    const handterKlikkNyFane = () => {
+    const handterKlikkNyFane = async () => {
         console.log('Brukernavn, handterKlikkNyFane.');
-        return oppdaterBrukerIKontekstOgNavigerTilLenke(bruker.fnr, getVeilarbpersonflateUrl(null, enhetId), true);
+        setTimeout(() => {
+            return oppdaterBrukerIKontekstOgNavigerTilLenke(bruker.fnr, getVeilarbpersonflateUrl(null, enhetId), true);
+        }, 2000);
     };
 
     return (
