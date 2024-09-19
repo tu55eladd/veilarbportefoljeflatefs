@@ -301,35 +301,17 @@ export const oppfolingsdatoEnsligeForsorgere = (alderBarn?: Date) => {
 };
 
 export const oppdaterBrukerIKontekstOgNavigerTilLenke = async (fnr: string, lenke: string, apneNyFane?: boolean) => {
-    const timeout = 2000;
-    console.log(
-        'oppdaterBrukerIKontekstOgNavigerTilLenke. Fnr: ',
-        fnr,
-        ', lenke: ',
-        lenke,
-        ', apneNyFane: ',
-        apneNyFane || 'undefined'
-    );
-    setTimeout(() => {
-        return settBrukerIKontekst(fnr).then(async () => {
-            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst');
+    return settBrukerIKontekst(fnr).then(async () => {
+        console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst');
 
-            setTimeout(() => {
-                if (apneNyFane) {
-                    console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = true');
-                    setTimeout(() => {
-                        return window.open(lenke, '_blank', 'noopener,noreferrer');
-                    }, timeout);
-                } else {
-                    console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = false');
-
-                    setTimeout(() => {
-                        return (window.location.href = lenke);
-                    }, timeout);
-                }
-            }, timeout);
-        });
-    }, timeout);
+        if (apneNyFane) {
+            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = true');
+            return window.open(lenke, '_blank', 'noopener,noreferrer');
+        } else {
+            console.log('oppdaterBrukerIKontekstOgNavigerTilLenke, settBrukerIKontekst, if apneNyFane = false');
+            return (window.location.href = lenke);
+        }
+    });
 };
 
 /**
